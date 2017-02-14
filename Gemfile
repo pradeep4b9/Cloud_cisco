@@ -16,6 +16,7 @@ gem 'mongoid_slug', '~> 3.2.1'
 
 # debug
 gem 'byebug'
+gem 'interact-rails'
 
 #User Auth
 gem 'devise'

@@ -13,8 +13,8 @@ class ImageUploader < CarrierWave::Uploader::Base
   # include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
-  #storage :file
-  storage :fog
+  storage :file
+  # storage :fog
 
   after :store, :encrypt_file
   before :store, :remember_cache_id
@@ -37,9 +37,9 @@ class ImageUploader < CarrierWave::Uploader::Base
   end
 
 
-  def fog_public
-    false
-  end
+  # def fog_public
+  #   false
+  # end
 
   def fog_authenticated_url_expiration
     15.minutes # in seconds from now,  (default is 10.minutes)
@@ -48,8 +48,12 @@ class ImageUploader < CarrierWave::Uploader::Base
 
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
+  # def store_dir
+  #   "development_uploads/#{model.class.to_s.underscore}/logo_#{model.id}"
+  # end
+
   def store_dir
-    "development_uploads/#{model.class.to_s.underscore}/logo_#{model.id}"
+    "images/#{model.class.to_s.underscore}/logo_#{model.id}"
   end
 
   # PDF version for the doc files

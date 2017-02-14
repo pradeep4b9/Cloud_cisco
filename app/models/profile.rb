@@ -1,4 +1,8 @@
+# require 'rmagick'
+# include Magick
+
 class Profile
+	
   include Mongoid::Document
   include Mongoid::Timestamps
   
@@ -16,6 +20,14 @@ class Profile
   
  
 
+
+# image = Image.read('product_image').first
+# puts image.format
+
+# image.write('product_image.svg')
+
+# image = Image.read('product_image.svg').first
+# puts image.format
 
 
 end

@@ -4,7 +4,6 @@ CarrierWave.configure do |config|
     :aws_access_key_id      => ENV['AWS_ACCESS_KEY_ID'],                        # required
     :aws_secret_access_key  => ENV['AWS_SECRET_ACCESS_KEY'],
     :region                 => 'us-east-1',
-    :public                 => 'true'
     
     }
   config.fog_directory  = 'images-paraginfotech'

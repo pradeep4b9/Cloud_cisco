@@ -1,6 +1,3 @@
-# require 'rmagick'
-# include Magick
-
 class Profile
 	
   include Mongoid::Document
@@ -15,19 +12,28 @@ class Profile
   
   mount_uploader :product_image,ImageUploader
   store_in_background :product_image
-    
+  
+  #after_save :update_format
  
   
- 
+ #  after_save do |img|
+	# 	image = Magick::Image.read(self.product_image.current_path).first
+	# 	puts image.format
 
+	# 	image.write('image.SVG')
 
-# image = Image.read('product_image').first
-# puts image.format
+	# 	image = Image.read('image.svg').first
+	# 	puts image.format
+	# end
 
-# image.write('product_image.svg')
-
-# image = Image.read('product_image.svg').first
-# puts image.format
-
+ #  def update_format
+	#   img, data = Magick::Image.from_blob(str) {
+	#     self.format = 'PNG'
+	#     self.background_color = 'transparent'
+	#   }
+	#   img.to_blob {
+	#     self.format = 'SVG'
+	#   }
+	# end
 
 end

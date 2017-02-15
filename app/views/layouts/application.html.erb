@@ -5,15 +5,17 @@
     <title>CRM</title>
     <meta content='width=device-width, initial-scale=1.0, user-scalable=no' name='viewport'>
     <meta content='Wavespot Social WiFi Router converts your business location into an engaging social hangout with Facebook and Twitter login for free access to social wifi.' name='description'>
-    <%= content_for?(:title) ? yield(:title) : "Pronto Networks" %></title>
-    <%= favicon_link_tag 'favicon1.ico' %>
-    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "Pronto Networks" %>">
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
    
+  
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css"/>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" />
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.js" />
+
     <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
     <%= csrf_meta_tags %>>
-    //<![CDATA[
-    //]]>
+    
     </script>
   </head>
   <body>
@@ -50,8 +52,8 @@
     </header>
     <div class='container-fluid'>
       <div class='hidden-phone hidden-tablet' id='main-nav'>
-      <div id="no-drop" class="draggable drag-drop"> #no-drop </div>
-        <ul>
+      <div id="box" class="draggable drag-drop"> #no-drop </div>
+        <!-- <ul>
           <li class='active dashboard sidenav'>
             <a href='/home'>
               <div class='icon'>
@@ -108,7 +110,7 @@
               Pos
             </a>
           </li>
-        </ul>
+        </ul> -->
         <div class='clearfix'></div>
       </div>
       

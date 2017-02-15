@@ -1,81 +1,118 @@
+
+
+
+<style>
+  
+
+
+body{ background-color: ivory; }
+#canvas{border:1px solid red;}
+
+#results {
+    text-align: center;
+    color:blue;
+}
+
+</style>
 <div class='dashboard-wrapper'>
-  <div class='content-header'>
-    <h3 class='title'>Image</h3>
-  </div>
-  <%= image_tag(@profile.product_image, 
-    :width => "auto" , :height => "60px", :style => "background-color: black;vertical-align: middle;") %>
-  <div class='main-container' style = "padding: 60px;margin: 20px;min-height: 407px;border: 5px solid #e6e6e6;">
-    <div id="no-drop" class="draggable drag-drop"> #no-drop </div>
+  
+  <h4>Drag the house onto the canvas.<br>
+      The house will be drawn on the canvas.</h4>
 
-    <div id="yes-drop" class="draggable drag-drop"> #yes-drop </div>
-
-    <div id="outer-dropzone" class="dropzone">
-      #outer-dropzone
-      <div id="inner-dropzone" class="dropzone">#inner-dropzone</div>
-     </div>
-    
-    <ul class='bundle-list'>
-      <div class='clearfix'></div>
-    </ul>
-    <div class='clearfix'></div>
-  </div>
+  <img id="house" width=32 height=32 src="https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png">
+  <br>
+  <canvas id="canvas" width="800" height="500"></canvas>
+  
 </div>
 
+<div id="results"></div>
 
-<!-- <div id="no-drop" class="draggable drag-drop"> #no-drop </div>
+<script>
 
-<div id="yes-drop" class="draggable drag-drop"> #yes-drop </div>
+// var coordinates = function(element) {
+//   element = $(element);
+//   var top = element.position().top;
+//   var left = element.position().left;
+//   $('#results').text('X: ' + left + ' ' + 'Y: ' + top);
 
-<div id="outer-dropzone" class="dropzone">
-  #outer-dropzone
-  <div id="inner-dropzone" class="dropzone">#inner-dropzone</div>
- </div> -->
+var canvas=document.getElementById("canvas");
+var ctx=canvas.getContext("2d");
+var $canvas=$("#canvas");
+var canvasOffset=$canvas.offset();
+var offsetX=canvasOffset.left;
+var offsetY=canvasOffset.top;
+
+var image1=new Image();
+image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
+
+var $house=$("#house");
+var $canvas=$("#canvas");
+$(function() {
+$house.draggable({
+    helper:'clone',
+});
+});
+// set the data payload
+$house.data("image",image1); // key-value pair
+$(function() {
+$canvas.droppable({
+    drop:dragDrop,
+});
+});
+
+
+function dragDrop(e,ui){
+    var element=ui.draggable;
+    var data=element.data("url");
+    var x=parseInt(ui.offset.left-offsetX);
+    var y=parseInt(ui.offset.top-offsetY);
+    ctx.drawImage(element.data("image"),x-1,y);
+    // $("results").text ('X:' + left + ' ' + 'Y:' + top);
+    var coords = "X co-ords: " + x + ", Y co-ords: " + y;
+    document.getElementById("results").innerHTML = coords;
+}
+
+// $(document).ready(function() {
+//   var ar = [[312, 143], [224, 99], [97, 297], [255, 102], [119, 205], [81, 273], [216, 196], [254, 230], [215, 67], [169, 421]];
+
+//   for (i = 0; i < ar.length; i++) {
+//     var image1=new Image();
+//   image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
+
+//     ctx.drawImage(image1,ar[i][0],ar[i][1]);
+//   }
+  
+// });
+
+
+
+var d = document.getElementById('results');
+var x_pos = 0;
+var y_pos = 0;
+
+d.style.position = "absolute";
+d.style.left = x_pos+'px';
+d.style.top = y_pos+'px';
+
+var pgimage=new Image();
+pgimage.src = "https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg";
+
+pgimage.onload = function(){
+ctx.drawImage(pgimage,0,0);
+  var ar = [[81, 273], [97, 297], [119, 205], [169, 421], [215, 67], [216, 196], [224, 99], [254, 230], [255, 102], [312, 143]];
+
+  for (i = 0; i < ar.length; i++) {
+    var image1=new Image();
+    image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
+    ctx.drawImage(image1,ar[i][0],ar[i][1]);
+    // var coords = "X co-ords: " + x + ", Y co-ords: " + y;
+    // document.getElementById("results").innerHTML = coords;
+  }
+  document.getElementById("results").innerHTML = ar;
+}
 
 
 
 
 
-<script type="text/javascript">
-  /* The dragging code for '.draggable' from the demo above
-   * applies to this demo as well so it doesn't have to be repeated. */
-
-  // enable draggables to be dropped into this
-  interact('.dropzone').dropzone({
-    // only accept elements matching this CSS selector
-    accept: '#yes-drop',
-
-    // Require a 75% element overlap for a drop to be possible
-    overlap: 0.75,
-
-    // listen for drop related events:
-
-    ondropactivate: function (event) {
-      alert('hi');
-      // add active dropzone feedback
-      event.target.classList.add('drop-active');
-    },
-    ondragenter: function (event) {
-      var draggableElement = event.relatedTarget,
-          dropzoneElement = event.target;
-
-      // feedback the possibility of a drop
-      dropzoneElement.classList.add('drop-target');
-      draggableElement.classList.add('can-drop');
-      draggableElement.textContent = 'Dragged in';
-    },
-    ondragleave: function (event) {
-      // remove the drop feedback style
-      event.target.classList.remove('drop-target');
-      event.relatedTarget.classList.remove('can-drop');
-      event.relatedTarget.textContent = 'Dragged out';
-    },
-    ondrop: function (event) {
-      event.relatedTarget.textContent = 'Dropped';
-    },
-    ondropdeactivate: function (event) {
-      // remove active dropzone feedback
-      event.target.classList.remove('drop-active');
-      event.target.classList.remove('drop-target');
-    }
-  });
 </script>

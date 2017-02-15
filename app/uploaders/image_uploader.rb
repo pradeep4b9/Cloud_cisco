@@ -9,16 +9,16 @@ class ImageUploader < CarrierWave::Uploader::Base
   include CarrierWave::MimeTypes
 
   # Include RMagick or MiniMagick support:
-  # include CarrierWave::RMagick
-  # include CarrierWave::MiniMagick
+  include CarrierWave::RMagick
+  include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file
   # storage :fog
 
-  after :store, :encrypt_file
-  before :store, :remember_cache_id
-  after :store, :delete_tmp_dir
+  # after :store, :encrypt_file
+  # before :store, :remember_cache_id
+  # after :store, :delete_tmp_dir
 
   #store! nil's the cache_id after it finishes so we need to remember it for deletion
   def remember_cache_id(new_file)
@@ -66,6 +66,11 @@ class ImageUploader < CarrierWave::Uploader::Base
   #   end
   # end
 
+
+  # version :icon do 
+  #   process :resize_to_fill => [50, 50] 
+  #   process :convert => 'png' 
+  # end
 
   # protected
   #   def supported_file?(new_file)

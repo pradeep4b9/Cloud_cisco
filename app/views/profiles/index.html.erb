@@ -5,12 +5,33 @@
   
 
 
-body{ background-color: ivory; }
-#canvas{border:1px solid red;}
+body {
+    padding:20px;
+}
+#container {
+    border:solid 1px #ccc;
+    margin-top: 10px;
+    width:650px;
+    height:550px;
+}
+#toolbar {
+    width:350px;
+    height:35px;
+    border:solid 1px blue;
+}
+
+div.small {
+  width: 400px;
+  height: 200px;
+  background-image: url(https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg);
+  background-size: cover;
+  background-color: lightblue;*/
+}
 
 #results {
     text-align: center;
-    color:blue;
+    color:white;
+}
 }
 
 </style>
@@ -20,71 +41,121 @@ body{ background-color: ivory; }
       The house will be drawn on the canvas.</h4>
 
   <img id="house" width=32 height=32 src="https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png">
+  <div id="container" class="small">
+    
+  </div>
   <br>
-  <canvas id="canvas" width="800" height="500"></canvas>
+  <!-- <canvas id="canvas" width="400" height="200"></canvas> -->
+  
   
 </div>
+  <div id="results"></div>
+  
 
-<div id="results"></div>
 
 <script>
 
-// var coordinates = function(element) {
-//   element = $(element);
-//   var top = element.position().top;
-//   var left = element.position().left;
-//   $('#results').text('X: ' + left + ' ' + 'Y: ' + top);
+var $house = $("#house");
+$house.hide();
 
-var canvas=document.getElementById("canvas");
-var ctx=canvas.getContext("2d");
-var $canvas=$("#canvas");
-var canvasOffset=$canvas.offset();
-var offsetX=canvasOffset.left;
-var offsetY=canvasOffset.top;
+// get the offset position of the kinetic container
+var $stageContainer = $("#container");
+var stageOffset = $stageContainer.offset();
+var offsetX = stageOffset.left;
+var offsetY = stageOffset.top;
 
-var image1=new Image();
+
+// create the Kinetic.Stage and layer
+var stage = new Kinetic.Stage({
+    container: 'container',
+    width: 650,
+    height: 550
+});
+var layer = new Kinetic.Layer();
+stage.add(layer);
+
+// start loading the image used in the draggable toolbar element
+// this image will be used in a new Kinetic.Image
+var image1 = new Image();
+image1.onload = function () {
+    $house.show();
+}
 image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
 
-var $house=$("#house");
-var $canvas=$("#canvas");
+// make the toolbar image draggable
 $(function() {
 $house.draggable({
-    helper:'clone',
+    helper: 'clone',
 });
 });
+
 // set the data payload
-$house.data("image",image1); // key-value pair
+$house.data("url", "house.png"); // key-value pair
+$house.data("width", "32"); // key-value pair
+$house.data("height", "33"); // key-value pair
+$house.data("image", image1); // key-value pair
+
+// make the Kinetic Container a dropzone
 $(function() {
-$canvas.droppable({
-    drop:dragDrop,
+$stageContainer.droppable({
+    drop: dragDrop,
 });
 });
 
+// handle a drop into the Kinetic container
+function dragDrop(e, ui) {
 
-function dragDrop(e,ui){
-    var element=ui.draggable;
-    var data=element.data("url");
-    var x=parseInt(ui.offset.left-offsetX);
-    var y=parseInt(ui.offset.top-offsetY);
-    ctx.drawImage(element.data("image"),x-1,y);
-    // $("results").text ('X:' + left + ' ' + 'Y:' + top);
-    var coords = "X co-ords: " + x + ", Y co-ords: " + y;
+    // get the drop point
+    var x = parseInt(ui.offset.left - offsetX) - 1;
+    var y = parseInt(ui.offset.top - offsetY);
+    // var x = parseInt(ui[0] - offsetX) - 1;
+    // var y = parseInt(ui[1] - offsetY);    
+    // get the drop payload (here the payload is the image)
+    var element = $house;//ui.draggable;
+    var data = element.data("url");
+    var theImage = element.data("image");
+     // create a new Kinetic.Image at the drop point
+    // be sure to adjust for any border width (here border==1)
+    var image = new Kinetic.Image({
+        name: data,
+        x: x,
+        y: y,
+        image: theImage,
+        draggable: true
+    });
+    layer.add(image);
+    layer.draw();
+     var coords = "X co-ords: " + x + ", Y co-ords: " + y;
     document.getElementById("results").innerHTML = coords;
 }
 
-// $(document).ready(function() {
-//   var ar = [[312, 143], [224, 99], [97, 297], [255, 102], [119, 205], [81, 273], [216, 196], [254, 230], [215, 67], [169, 421]];
 
-//   for (i = 0; i < ar.length; i++) {
-//     var image1=new Image();
-//   image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
+function dragDropwithcords(e, ui) {
 
-//     ctx.drawImage(image1,ar[i][0],ar[i][1]);
-//   }
-  
-// });
+    // get the drop point
+    // var x = parseInt(ui.offset.left - offsetX);
+    // var y = parseInt(ui.offset.top - offsetY);
 
+    var x = parseInt(ui[0] - offsetX);
+    var y = parseInt(ui[1] - offsetY);
 
+    // get the drop payload (here the payload is the image)
+    var element = $house;
+    var data = element.data("url");
+    var theImage = element.data("image");
+
+    // create a new Kinetic.Image at the drop point
+    // be sure to adjust for any border width (here border==1)
+    var image = new Kinetic.Image({
+        name: data,
+        x: x,
+        y: y,
+        image: theImage,
+        draggable: true
+    });
+    layer.add(image);
+    layer.draw();
+}
 
 var d = document.getElementById('results');
 var x_pos = 0;
@@ -98,29 +169,19 @@ var pgimage=new Image();
 pgimage.src = "https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg";
 
 pgimage.onload = function(){
-ctx.drawImage(pgimage,0,0);
-  var ar = [[81, 273], [97, 297], [119, 205], [169, 421], [215, 67], [216, 196], [224, 99], [254, 230], [255, 102], [312, 143]];
-
+//ctx.drawImage(pgimage,0,0);
+  //var ar = [[170, 480]];//, [97, 297], [119, 205], [169, 421], [215, 67], [216, 196], [224, 99], [254, 230], [255, 102], [312, 143]];
+  var ar = [[399, 296],[496,295],[555,343],[623,355]];
   for (i = 0; i < ar.length; i++) {
-    var image1=new Image();
-    image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
-    ctx.drawImage(image1,ar[i][0],ar[i][1]);
+    // var image1=new Image();
+    // image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
+    dragDropwithcords("",ar[i]);
+    //ctx.drawImage(image1,ar[i][0],ar[i][1]);
     // var coords = "X co-ords: " + x + ", Y co-ords: " + y;
     // document.getElementById("results").innerHTML = coords;
   }
   document.getElementById("results").innerHTML = ar;
 }
-// $(function() {
-// $('#house').draggable({
-//     start: function() {
-//         image1('#house');
-//     },
-//     stop: function() {
-//         image1('#house');
-//     }
-// });
-// });
-
 
 
 </script>

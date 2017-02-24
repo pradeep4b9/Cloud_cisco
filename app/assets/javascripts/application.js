@@ -15,8 +15,10 @@
 //= require turbolinks
 //= require bootstrap
 //= require bootstrap-sprockets
-//= require interact.min
-//= require interact
+//= require kinetic.min
+
+
+
 
 
  

@@ -1,7 +1,7 @@
 class ProfilesController < ApplicationController
 
 	def index
-    @profile = Profile.last
+    # @profile = Profile.last
   end
 
   def new

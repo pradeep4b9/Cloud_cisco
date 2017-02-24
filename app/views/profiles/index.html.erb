@@ -134,6 +134,15 @@ function dragDrop(e, ui) {
      var coords = "X co-ords: " + x + ", Y co-ords: " + y;
     document.getElementById("results").innerHTML = coords;
 
+    $pos = $("#results");
+
+    image.on("dragmove", function () {
+    var gPos = image.getPosition();
+    var x = parseInt(offsetX + gPos.x);
+    var y = parseInt(offsetY + gPos.y);
+    $pos.text("photoImage: screenX=" + x + ", screenY=" + y);
+});
+
     // $(function() {
 
     // var position = stage.getUserPosition();
@@ -203,12 +212,12 @@ pgimage.onload = function(){
 }
 
 //you're passing parameters that don't exist in _mousemove
-function getMousePosition(e){
-    var mouseX = e.clientX;
-    var mouseY = e.clientY;
-    console.log("mouseX = " + mouseX);
-    console.log("mouseY = " + mouseY);
-}
+// function getMousePosition(e){
+//     var mouseX = e.clientX;
+//     var mouseY = e.clientY;
+//     console.log("mouseX = " + mouseX);
+//     console.log("mouseY = " + mouseY);
+// }
 
 
 
@@ -247,5 +256,55 @@ function getMousePosition(e){
 //         dd._startDrag(evt);
 //     }
 // }
+
+
+// var containerOffset = $("#container").offset();
+// var offsetX = containerOffset.left;
+// var offsetY = containerOffset.top;
+
+// //
+// var stage = new Kinetic.Stage({
+//     container: 'container',
+//     width: 350,
+//     height: 350
+// });
+
+// //
+// photoLayer = new Kinetic.Layer({
+//     drawBorder: true
+// });
+// stage.add(photoLayer);
+
+// //
+// photoGroup = new Kinetic.Group({
+//     x: 0,
+//     y: 0,
+//     draggable: true,
+//     id: "photoGroup"
+// });
+// photoGroup.on("dragmove", function () {
+//     var gPos = photoGroup.getPosition();
+//     var x = parseInt(offsetX + gPos.x);
+//     var y = parseInt(offsetY + gPos.y);
+//     $pos.text("photoImage: screenX=" + x + ", screenY=" + y);
+// });
+// photoLayer.add(photoGroup);
+
+// //
+// var photoObj = new Image();
+// photoObj.onload = function () {
+//     var photoImage = new Kinetic.Image({
+//         x: 0,
+//         y: 0,
+//         image: photoObj,
+//         width: photoObj.width,
+//         height: photoObj.height,
+//         name: "photo",
+//         id: "photo"
+//     });
+//     photoGroup.add(photoImage);
+//     photoLayer.draw();
+// }
+// photoObj.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
 
 </script>

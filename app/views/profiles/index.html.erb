@@ -1,9 +1,4 @@
-
-
-
 <style>
-  
-
 
 body {
     padding:20px;
@@ -14,33 +9,41 @@ body {
     width:650px;
     height:550px;
 }
-#toolbar {
+#housebar {
     width:350px;
-    height:35px;
+    height:350px;
     border:solid 1px blue;
 }
 
 div.small {
   width: 400px;
-  height: 200px;
+  height: 400px;
   background-image: url(https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg);
   background-size: cover;
   background-color: lightblue;*/
 }
 
 #results {
+    margin-top: 12px;
+    width: 478px;
+    height: 50px;
+    border: 1px solid white;
+    color: white;
     text-align: center;
-    color:white;
-}
+    font-family: "Times New Roman", Times, serif;
+    font-size: 23px;
+    left: 235px;
 }
 
 </style>
 <div class='dashboard-wrapper'>
   
-  <h4>Drag the house onto the canvas.<br>
-      The house will be drawn on the canvas.</h4>
+  <h4>Captiveportal Module</h4>
 
-  <img id="house" width=32 height=32 src="https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png">
+  <img id="house" width=26 height=26 src="https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png">
+  <img class="" width=28 height=28 src="">
+  <img class="" width=28 height=28 src="">
+  <img class="" width=28 height=28 src="">
   <div id="container" class="small">
     
   </div>
@@ -65,6 +68,8 @@ var offsetX = stageOffset.left;
 var offsetY = stageOffset.top;
 
 
+
+
 // create the Kinetic.Stage and layer
 var stage = new Kinetic.Stage({
     container: 'container',
@@ -74,7 +79,7 @@ var stage = new Kinetic.Stage({
 var layer = new Kinetic.Layer();
 stage.add(layer);
 
-// start loading the image used in the draggable toolbar element
+// start loading the image used in the draggable housebar element
 // this image will be used in a new Kinetic.Image
 var image1 = new Image();
 image1.onload = function () {
@@ -82,7 +87,7 @@ image1.onload = function () {
 }
 image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
 
-// make the toolbar image draggable
+// make the housebar image draggable
 $(function() {
 $house.draggable({
     helper: 'clone',
@@ -104,7 +109,7 @@ $stageContainer.droppable({
 
 // handle a drop into the Kinetic container
 function dragDrop(e, ui) {
-
+    alert("first");
     // get the drop point
     var x = parseInt(ui.offset.left - offsetX) - 1;
     var y = parseInt(ui.offset.top - offsetY);
@@ -125,12 +130,23 @@ function dragDrop(e, ui) {
     });
     layer.add(image);
     layer.draw();
+
      var coords = "X co-ords: " + x + ", Y co-ords: " + y;
     document.getElementById("results").innerHTML = coords;
+
+    // $(function() {
+
+    // var position = stage.getUserPosition();
+    // document.getElementById("results").innerHTML = position;
+    // });
+    
 }
 
 
+
 function dragDropwithcords(e, ui) {
+
+  alert("second");
 
     // get the drop point
     // var x = parseInt(ui.offset.left - offsetX);
@@ -181,7 +197,55 @@ pgimage.onload = function(){
     // document.getElementById("results").innerHTML = coords;
   }
   document.getElementById("results").innerHTML = ar;
+
+
+  
 }
 
+//you're passing parameters that don't exist in _mousemove
+function getMousePosition(e){
+    var mouseX = e.clientX;
+    var mouseY = e.clientY;
+    console.log("mouseX = " + mouseX);
+    console.log("mouseY = " + mouseY);
+}
+
+
+
+// mousemove: function (evt) {
+//     this._setUserPosition(evt);
+//     var dd = Kinetic.DD;
+//     var obj = this.getIntersection(this.getUserPosition());
+//     getMousePosition(evt);
+
+//     if(obj) {
+//         var shape = obj.shape;
+//         if(shape) {
+//             if((!dd || !dd.moving) && obj.pixel[3] === 255 && (!this.targetShape || this.targetShape._id !== shape._id)) {
+//                 if(this.targetShape) {
+//                     this.targetShape._handleEvent('mouseout', evt, shape);
+//                     this.targetShape._handleEvent('mouseleave', evt, shape);
+//                 }
+//                 shape._handleEvent('mouseover', evt, this.targetShape);
+//                 shape._handleEvent('mouseenter', evt, this.targetShape);
+//                 this.targetShape = shape;
+//             }
+//             else {
+//                 shape._handleEvent('mousemove', evt);
+//             }
+//         }
+//     }
+   
+//     else if(this.targetShape && (!dd || !dd.moving)) {
+//         this.targetShape._handleEvent('mouseout', evt);
+//         this.targetShape._handleEvent('mouseleave', evt);
+//         this.targetShape = null;
+//     }
+
+    
+//     if(dd) {
+//         dd._startDrag(evt);
+//     }
+// }
 
 </script>

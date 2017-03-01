@@ -5258,7 +5258,7 @@ ul{
 
 // Main Header
 header{
-	height: 80px;
+	height: 10px;
 	vertical-align: middle;
 	@include linear-gradient(#3f3f3f, #222222);
 	.logo{
@@ -5494,12 +5494,12 @@ header{
 }
 
 .dashboard-wrapper{
-	margin: 0px 30px 0px 210px;
+	margin: -56px 109px 0px 164px;
 	background: $white;
-	padding: 0;
+	padding: 109px;
 	position: relative;
-	top: -40px;
-	@include border-radius(6px);
+	top: 121px;
+	@include border-radius(1px);
 	.content-header{
 		position: relative;
 		top: 0;

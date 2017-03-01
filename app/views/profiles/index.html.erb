@@ -1,30 +1,37 @@
 <style>
 
-body {
-    padding:20px;
+#canvas-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    box-shadow: 0 0 5px 1px black;
+    margin: 10px auto;
+    border: 5px solid transparent;
 }
-#container {
-    border:solid 1px #ccc;
-    margin-top: 10px;
-    width:650px;
-    height:550px;
+#canvas-container.over {
+    border: 5px dashed cyan;
 }
-#housebar {
-    width:350px;
-    height:350px;
-    border:solid 1px blue;
+#images img.img_dragging {
+    opacity: 0.4;
 }
+/* 
+Styles below based on  http://www.html5rocks.com/en/tutorials/dnd/basics/ 
+*/
 
-div.small {
-  width: 400px;
-  height: 400px;
-  background-image: url(https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg);
-  background-size: cover;
-  background-color: lightblue;*/
+/* Prevent the text contents of draggable elements from being selectable. */
+[draggable] {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* Required to make elements draggable in old WebKit */
+    -khtml-user-drag: element;
+    -webkit-user-drag: element;
+    cursor: move;
 }
 
 #results {
-    margin-top: 12px;
+    margin-top: -678px;
     width: 478px;
     height: 50px;
     border: 1px solid white;
@@ -32,163 +39,295 @@ div.small {
     text-align: center;
     font-family: "Times New Roman", Times, serif;
     font-size: 23px;
-    left: 235px;
+    float: right;
 }
 
+div.small {
+  width: 400px;
+  height: 400px;
+  background-image: url(https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg);
+  background-size: cover;
+  background-color: lightblue;
+}*/
+
 </style>
-<div class='dashboard-wrapper'>
-  
-  <h4>Captiveportal Module</h4>
-
-  <img id="house" width=26 height=26 src="https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png">
-  <img class="" width=28 height=28 src="">
-  <img class="" width=28 height=28 src="">
-  <img class="" width=28 height=28 src="">
-  <div id="container" class="small">
-    
+  <div id="images">
+      <img draggable="true" src="https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png" width="30" height="30" id = "image1" data-mac="22:22:22" ></img>
+      <img draggable="true" src="http://images.clipartpanda.com/location-icon-map-map_marker-512.png" width="36" height="30"  id = "image2" data-mac="22:22:11"></img>
+      <img draggable="true" src="https://img.clipartfest.com/c17bcdef97a76752c622e55955cd72b2_location-symbol-map-clip-art-location-icon-clipart_366-592.png" width="25" height="25" id = "image3" data-mac="11:22:22" ></img>
+      <img draggable="" src="" width="" height="" id = "" data-mac="" ></img>
   </div>
-  <br>
-  <!-- <canvas id="canvas" width="400" height="200"></canvas> -->
-  
-  
-</div>
-  <div id="results"></div>
-  
 
+
+   
+  <div id="canvas-container" class= "small">
+      <canvas id="canvas" width="800" height="600"></canvas>
+  </div>
+  
+  <div id="results"></div>
 
 <script>
 
-var $house = $("#house");
-$house.hide();
 
-// get the offset position of the kinetic container
-var $stageContainer = $("#container");
-var stageOffset = $stageContainer.offset();
-var offsetX = stageOffset.left;
-var offsetY = stageOffset.top;
+/* Drag and Drop code adapted from http://www.html5rocks.com/en/tutorials/dnd/basics/ */
+
+var canvas = new fabric.Canvas('canvas');
+
+JSON.stringify(canvas);
 
 
+var edgedetection = 8; //pixels to snap
+canvas.selection = false;
 
+window.addEventListener('resize', resizeCanvas, false);
 
-// create the Kinetic.Stage and layer
-var stage = new Kinetic.Stage({
-    container: 'container',
-    width: 650,
-    height: 550
-});
-var layer = new Kinetic.Layer();
-stage.add(layer);
-
-// start loading the image used in the draggable housebar element
-// this image will be used in a new Kinetic.Image
-var image1 = new Image();
-image1.onload = function () {
-    $house.show();
+function resizeCanvas() {
+    canvas.setHeight(window.innerHeight);
+    canvas.setWidth(window.innerWidth);
+    canvas.renderAll();
 }
-image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
 
-// make the housebar image draggable
-$(function() {
-$house.draggable({
-    helper: 'clone',
-});
-});
+// resize on ini
 
-// set the data payload
-$house.data("url", "house.png"); // key-value pair
-$house.data("width", "32"); // key-value pair
-$house.data("height", "33"); // key-value pair
-$house.data("image", image1); // key-value pair
-
-// make the Kinetic Container a dropzone
-$(function() {
-$stageContainer.droppable({
-    drop: dragDrop,
-});
-});
-
-// handle a drop into the Kinetic container
-function dragDrop(e, ui) {
-    alert("first");
-    // get the drop point
-    var x = parseInt(ui.offset.left - offsetX) - 1;
-    var y = parseInt(ui.offset.top - offsetY);
-    // var x = parseInt(ui[0] - offsetX) - 1;
-    // var y = parseInt(ui[1] - offsetY);    
-    // get the drop payload (here the payload is the image)
-    var element = $house;//ui.draggable;
-    var data = element.data("url");
-    var theImage = element.data("image");
-     // create a new Kinetic.Image at the drop point
-    // be sure to adjust for any border width (here border==1)
-    var image = new Kinetic.Image({
-        name: data,
-        x: x,
-        y: y,
-        image: theImage,
-        draggable: true
+function handleDragStart(e) {
+    [].forEach.call(images, function (img) {
+        img.classList.remove('img_dragging');
     });
-    layer.add(image);
-    layer.draw();
+    this.classList.add('img_dragging');
+}
 
-     var coords = "X co-ords: " + x + ", Y co-ords: " + y;
-    document.getElementById("results").innerHTML = coords;
 
-    $pos = $("#results");
 
-    image.on("dragmove", function () {
-    var gPos = image.getPosition();
-    var x = parseInt(offsetX + gPos.x);
-    var y = parseInt(offsetY + gPos.y);
-    $pos.text("photoImage: screenX=" + x + ", screenY=" + y);
+
+function handleDragOver(e) {
+   //alert("handleDragOver");
+    if (e.preventDefault) {
+        e.preventDefault(); // Necessary. Allows us to drop.
+    }
+
+    e.dataTransfer.dropEffect = 'copy'; // See the section on the DataTransfer object.
+    // NOTE: comment above refers to the article (see top) -natchiketa
+
+    return false;
+}
+canvas.on('mouse:up', function(e) {
+  // console.log(e.target); // should contain info on the clicked object
 });
 
-    // $(function() {
 
-    // var position = stage.getUserPosition();
-    // document.getElementById("results").innerHTML = position;
+function handleDragEnter(e) {
+  // alert("handleDragEnter");
+    // this / e.target is the current hover target.
+   
+    this.classList.add('over');
+}
+
+function handleDragLeave(e) {
+  //alert("handleDragLeave");
+    this.classList.remove('over'); // this / e.target is previous target element.
+}
+
+function handleDrop(e) {
+    // this / e.target is current target element.
+    //alert("handleDrop");
+     e.preventDefault();
+    if (e.stopPropagation) {
+        e.stopPropagation(); // stops the browser from redirecting.
+    }
+
+    var img = document.querySelector('#images img.img_dragging');
+
+    // console.log('event: ', e);
+
+    // var newImage = new fabric.Image(img, {
+    //     width: img.width,
+    //     height: img.height,
+    //     // Set the center of the new object based on the event coordinates relative
+    //     // to the canvas container.
+    //     left: e.layerX,
+    //     top: e.layerY,
+    //     img.hasControls: false
+
     // });
-    
-}
-
-
-
-function dragDropwithcords(e, ui) {
-
-  alert("second");
-
-    // get the drop point
-    // var x = parseInt(ui.offset.left - offsetX);
-    // var y = parseInt(ui.offset.top - offsetY);
-
-    var x = parseInt(ui[0] - offsetX);
-    var y = parseInt(ui[1] - offsetY);
-
-    // get the drop payload (here the payload is the image)
-    var element = $house;
-    var data = element.data("url");
-    var theImage = element.data("image");
-
-    // create a new Kinetic.Image at the drop point
-    // be sure to adjust for any border width (here border==1)
-    var image = new Kinetic.Image({
-        name: data,
-        x: x,
-        y: y,
-        image: theImage,
-        draggable: true
+    fabric.Image.fromURL(img.src, function (oImg) {
+      oImg.width = img.width;
+      oImg.height = img.height;
+      oImg.top = e.layerX;
+      oImg.left = e.layerY;
+      oImg.hasControls = false;
+      canvas.add(oImg);
     });
-    layer.add(image);
-    layer.draw();
+
+
+    var array = [];
+    //canvas.add(newImage);
+    var x = e.layerX; // $scope.fabric.canvasScale;
+    var y = e.layerY;// $scope.fabric.canvasScale;
+    var coords = "Original Position=" + "X co-ords: " + x + ", Y co-ords: " + y;
+    document.getElementById("results").innerHTML = coords;
+    var jsonData = JSON.stringify(canvas);
+    var obj1 = jQuery.parseJSON(jsonData);
+    var ar = {};
+    obj1.objects.forEach(function(ob) {
+    //  ar[canvas.relatedTarget._element.dataset["mac"]] = [ob["left"], ob["top"]];
+    });
+    console.log(ar);
+    // console.log(obj.left + ", " + obj.top);
+    // array.push(x, y);
+
+    // var id = document.querySelector('#images img.img_dragging');
+    // var arr = new Array();
+    // arr.push(new newImage(x, y));
+    // arr.push(new coordinate(0, 11));
+
+    // mac_xy[id] = [x,y];
+
+    // document.getElementById("id").innerHTML = coords;
+    return false;
+}
+  
+  function handleDropwithcords(e,cords) {
+    if (e.stopPropagation) {
+        e.stopPropagation(); // stops the browser from redirecting.
+    }
+
+    // var img = document.querySelector('#images img.img_dragging');
+    var pgimage=new Image();
+    pgimage.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
+    // console.log('event: ', e);
+
+
+
+    // var newImage = new fabric.Image(pgimage, {
+    //     width: pgimage.width,
+    //     height: pgimage.height,
+    //     left: cords[0],
+    //     top: cords[1]
+    // });
+
+    fabric.Image.fromURL(pgimage.src, function (oImg) {
+      oImg.width = pgimage.width;
+      oImg.height = pgimage.height;
+      oImg.top = cords[1];
+      oImg.left = cords[0];
+      oImg.hasControls = false;
+      canvas.add(oImg);
+    });
+
+
+    var array = [];
+    // canvas.add(newImage);
+    var x = cords[0]; // $scope.fabric.canvasScale;
+    var y = cords[1];// $scope.fabric.canvasScale;
+    var coords = "Original Position=" + "X co-ords: " + x + ", Y co-ords: " + y;
+    document.getElementById("results").innerHTML = coords;
+   
+    
+    return false;
 }
 
-var d = document.getElementById('results');
-var x_pos = 0;
-var y_pos = 0;
 
-d.style.position = "absolute";
-d.style.left = x_pos+'px';
-d.style.top = y_pos+'px';
+function handleDragEnd(e) {
+  //alert("handleDragEnd");
+    // this/e.target is the source node.
+    // console.log(this);
+    if (navigator.userAgent.indexOf('Firefox') != -1 && parseFloat(navigator.userAgent.substring(navigator.userAgent.indexOf('Firefox') + 8)) >= 3.6){//Firefox {
+      var x = e.fabric.canvasScale;//e.layerX; // $scope.fabric.canvasScale;
+      var y = e.fabric.canvasScale; //e.layerY;// $scope.fabric.canvasScale;
+    } else {
+      var x = e.layerX;
+      var y = e.layerY;
+
+    }
+      var coords = "Original Position=" + "X co-ords: " + x + ", Y co-ords: " + y;
+      document.getElementById("results").innerHTML = coords;
+      console.log(x);
+      console.log(y);
+      console.log(e.target.dataset["mac"]);
+      var ar = {};
+      ar[e.target.dataset["mac"]] = [x,y];
+      console.log(ar);
+      [].forEach.call(images, function (img) {
+          img.classList.remove('img_dragging');
+      });
+}
+
+  
+
+if (Modernizr.draganddrop) {
+    // Browser supports HTML5 DnD.
+
+    // Bind the event listeners for the image elements
+    var images = document.querySelectorAll('#images img');
+    [].forEach.call(images, function (img) {
+        img.addEventListener('dragstart', handleDragStart, false);
+        img.addEventListener('dragend', handleDragEnd, false);
+    });
+    // Bind the event listeners for the canvas
+    var canvasContainer = document.getElementById('canvas-container');
+    canvasContainer.addEventListener('dragenter', handleDragEnter, false);
+    canvasContainer.addEventListener('dragover', handleDragOver, false);
+    canvasContainer.addEventListener('dragleave', handleDragLeave, false);
+    canvasContainer.addEventListener('drop', handleDrop, false);
+} else {
+    // Replace with a fallback to a library solution.
+    alert("This browser doesn't support the HTML5 Drag and Drop API.");
+}
+
+function addDeleteBtn(x, y, w){
+  $(".deleteBtn").remove(); 
+  var btnLeft = x;
+  var btnTop = y - 25;
+  var widthadjust=w/2;
+  btnLeft=widthadjust+btnLeft-10;
+  var deleteBtn = '<p" class="deleteBtn" title="Delete" style="position:absolute;top:'+btnTop+'px;left:'+btnLeft+'px;cursor:pointer;" title="Remove object">&#10005;</p>';
+        jQuery(".canvas-container").append(deleteBtn);
+}
+
+canvas.on('object:selected',function(e){
+    addDeleteBtn(e.target.oCoords.mt.x, e.target.oCoords.mt.y, e.target.width);
+});
+
+canvas.on('mouse:down',function(e){
+    if(!canvas.getActiveObject())
+    {
+    $(".deleteBtn").remove(); 
+    }
+});
+
+canvas.on('object:modified',function(e){
+  addDeleteBtn(e.target.oCoords.mt.x, e.target.oCoords.mt.y, e.target.width);
+});
+
+canvas.on('object:moving',function(e){
+  $(".deleteBtn").remove(); 
+  var scaledObject = e.target;
+  // mac_xy[id] = [x,y];
+  // console.log(mac_xy);
+  $('#results').text("New position : X:"+parseInt(scaledObject.getBoundingRect().left)+", Y:"+parseInt(scaledObject.getBoundingRect().top));
+    //var coords = "Original Position=" + "X co-ords: " + x + ", Y co-ords: " + y;
+    //document.getElementById("results").innerHTML = coords;
+    console.log(parseInt(scaledObject.getBoundingRect().left));
+    console.log(parseInt(scaledObject.getBoundingRect().top));
+    console.log(scaledObject);
+
+    // console.log(e.target.dataset["mac"]);
+    // var ar = {};
+    // ar[e.target.dataset["mac"]] = [x,y];
+    // console.log(ar);
+    // [].forEach.call(images, function (img) {
+    //     img.classList.remove('img_dragging');
+    // });
+});
+
+
+$(document).on('click',".deleteBtn",function(){
+  if(canvas.getActiveObject())
+  {
+    canvas.remove(canvas.getActiveObject());
+    $(".deleteBtn").remove();
+  }
+});
 
 var pgimage=new Image();
 pgimage.src = "https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg";
@@ -196,11 +335,11 @@ pgimage.src = "https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175aff
 pgimage.onload = function(){
 //ctx.drawImage(pgimage,0,0);
   //var ar = [[170, 480]];//, [97, 297], [119, 205], [169, 421], [215, 67], [216, 196], [224, 99], [254, 230], [255, 102], [312, 143]];
-  var ar = [[399, 296],[496,295],[555,343],[623,355]];
+  var ar = [[185, 266],[506,99],[179,421],[554,342]];
   for (i = 0; i < ar.length; i++) {
     // var image1=new Image();
     // image1.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
-    dragDropwithcords("",ar[i]);
+    handleDropwithcords("",ar[i]);
     //ctx.drawImage(image1,ar[i][0],ar[i][1]);
     // var coords = "X co-ords: " + x + ", Y co-ords: " + y;
     // document.getElementById("results").innerHTML = coords;
@@ -211,100 +350,8 @@ pgimage.onload = function(){
   
 }
 
-//you're passing parameters that don't exist in _mousemove
-// function getMousePosition(e){
-//     var mouseX = e.clientX;
-//     var mouseY = e.clientY;
-//     console.log("mouseX = " + mouseX);
-//     console.log("mouseY = " + mouseY);
-// }
-
-
-
-// mousemove: function (evt) {
-//     this._setUserPosition(evt);
-//     var dd = Kinetic.DD;
-//     var obj = this.getIntersection(this.getUserPosition());
-//     getMousePosition(evt);
-
-//     if(obj) {
-//         var shape = obj.shape;
-//         if(shape) {
-//             if((!dd || !dd.moving) && obj.pixel[3] === 255 && (!this.targetShape || this.targetShape._id !== shape._id)) {
-//                 if(this.targetShape) {
-//                     this.targetShape._handleEvent('mouseout', evt, shape);
-//                     this.targetShape._handleEvent('mouseleave', evt, shape);
-//                 }
-//                 shape._handleEvent('mouseover', evt, this.targetShape);
-//                 shape._handleEvent('mouseenter', evt, this.targetShape);
-//                 this.targetShape = shape;
-//             }
-//             else {
-//                 shape._handleEvent('mousemove', evt);
-//             }
-//         }
-//     }
-   
-//     else if(this.targetShape && (!dd || !dd.moving)) {
-//         this.targetShape._handleEvent('mouseout', evt);
-//         this.targetShape._handleEvent('mouseleave', evt);
-//         this.targetShape = null;
-//     }
-
-    
-//     if(dd) {
-//         dd._startDrag(evt);
-//     }
-// }
-
-
-// var containerOffset = $("#container").offset();
-// var offsetX = containerOffset.left;
-// var offsetY = containerOffset.top;
-
-// //
-// var stage = new Kinetic.Stage({
-//     container: 'container',
-//     width: 350,
-//     height: 350
-// });
-
-// //
-// photoLayer = new Kinetic.Layer({
-//     drawBorder: true
-// });
-// stage.add(photoLayer);
-
-// //
-// photoGroup = new Kinetic.Group({
-//     x: 0,
-//     y: 0,
-//     draggable: true,
-//     id: "photoGroup"
-// });
-// photoGroup.on("dragmove", function () {
-//     var gPos = photoGroup.getPosition();
-//     var x = parseInt(offsetX + gPos.x);
-//     var y = parseInt(offsetY + gPos.y);
-//     $pos.text("photoImage: screenX=" + x + ", screenY=" + y);
-// });
-// photoLayer.add(photoGroup);
-
-// //
-// var photoObj = new Image();
-// photoObj.onload = function () {
-//     var photoImage = new Kinetic.Image({
-//         x: 0,
-//         y: 0,
-//         image: photoObj,
-//         width: photoObj.width,
-//         height: photoObj.height,
-//         name: "photo",
-//         id: "photo"
-//     });
-//     photoGroup.add(photoImage);
-//     photoLayer.draw();
-// }
-// photoObj.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
 
 </script>
+
+
+

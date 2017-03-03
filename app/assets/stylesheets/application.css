@@ -10,6 +10,7 @@
  *
  *= require_self
  *= require main
+ *= require vis
  
  */
 
@@ -60,3 +61,5 @@
   color: #000;
   background-color: #4e4;
 }
+
+@import "vis";

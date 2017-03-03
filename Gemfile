@@ -61,6 +61,8 @@ gem "rack-raw-upload" #, "~> 1.1.1"
 gem "carrierwave_encrypter_decrypter", "~> 0.0.6"
 
 
+
+
 # Background Job
 gem 'redis-namespace'
 gem 'sidekiq'

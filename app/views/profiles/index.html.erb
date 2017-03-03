@@ -1,3 +1,5 @@
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.18.1/vis.min.js" /></script> -->
+
 <style>
 
 #canvas-container {
@@ -47,15 +49,39 @@ div.small {
   height: 400px;
   background-image: url(https://s-media-cache-ak0.pinimg.com/736x/e1/98/d2/e198d2ba175affaf853e2ea2292cb95e.jpg);
   background-size: cover;
-  background-color: lightblue;
+  /*background-color: lightblue;*/
 }*/
+
+.vis-item.vis-line {
+    position: absolute;
+    border-width: 2px;
+    border-color: red;
+  }
+  
+  .vis-item.vis-box {
+    border-width: 1;
+    text-align: left !important;
+    background-color: transparent !important;
+    border-left-width: 1px;
+    border-color: red;
+  }
+.vis-time-axis .vis-text {
+    position: absolute;
+    color: #ffffff;
+    border: 1px solid lightgray;
+    padding: 3px;
+    overflow: hidden;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
 
 </style>
   <div id="images">
       <img draggable="true" src="https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png" width="30" height="30" id = "image1" data-mac="22:22:22" ></img>
       <img draggable="true" src="http://images.clipartpanda.com/location-icon-map-map_marker-512.png" width="36" height="30"  id = "image2" data-mac="22:22:11"></img>
       <img draggable="true" src="https://img.clipartfest.com/c17bcdef97a76752c622e55955cd72b2_location-symbol-map-clip-art-location-icon-clipart_366-592.png" width="25" height="25" id = "image3" data-mac="11:22:22" ></img>
-      <img draggable="" src="" width="" height="" id = "" data-mac="" ></img>
+      <img draggable="" src="" width="25" height="25" id = "" data-mac="" ></img>
+      <img draggable="" src="" width="25" height="25" id = "" data-mac="" ></img>
   </div>
 
 
@@ -65,6 +91,7 @@ div.small {
   </div>
   
   <div id="results"></div>
+  <div id="visualization"></div>
 
 <script>
 
@@ -78,6 +105,8 @@ JSON.stringify(canvas);
 
 var edgedetection = 8; //pixels to snap
 canvas.selection = false;
+
+
 
 window.addEventListener('resize', resizeCanvas, false);
 
@@ -139,28 +168,19 @@ function handleDrop(e) {
 
     // console.log('event: ', e);
 
-    // var newImage = new fabric.Image(img, {
-    //     width: img.width,
-    //     height: img.height,
-    //     // Set the center of the new object based on the event coordinates relative
-    //     // to the canvas container.
-    //     left: e.layerX,
-    //     top: e.layerY,
-    //     img.hasControls: false
-
-    // });
-    fabric.Image.fromURL(img.src, function (oImg) {
-      oImg.width = img.width;
-      oImg.height = img.height;
-      oImg.top = e.layerX;
-      oImg.left = e.layerY;
-      oImg.hasControls = false;
-      canvas.add(oImg);
+    var newImage = new fabric.Image(img, {
+        width: img.width,
+        height: img.height,
+        //console.log(newImage);
+        // Set the center of the new object based on the event coordinates relative
+        // to the canvas container.
+        left: e.layerX,
+        top: e.layerY,
+        hasControls: false,
+        // hasBorders: false
     });
-
-
     var array = [];
-    //canvas.add(newImage);
+    canvas.add(newImage);
     var x = e.layerX; // $scope.fabric.canvasScale;
     var y = e.layerY;// $scope.fabric.canvasScale;
     var coords = "Original Position=" + "X co-ords: " + x + ", Y co-ords: " + y;
@@ -196,27 +216,15 @@ function handleDrop(e) {
     pgimage.src = "https://dl.dropboxusercontent.com/u/139992952/stackoverflow/house32x32transparent.png";
     // console.log('event: ', e);
 
-
-
-    // var newImage = new fabric.Image(pgimage, {
-    //     width: pgimage.width,
-    //     height: pgimage.height,
-    //     left: cords[0],
-    //     top: cords[1]
-    // });
-
-    fabric.Image.fromURL(pgimage.src, function (oImg) {
-      oImg.width = pgimage.width;
-      oImg.height = pgimage.height;
-      oImg.top = cords[1];
-      oImg.left = cords[0];
-      oImg.hasControls = false;
-      canvas.add(oImg);
+    var newImage = new fabric.Image(pgimage, {
+        width: pgimage.width,
+        height: pgimage.height,
+        left: cords[0],
+        top: cords[1],
+        hasControls: false,
     });
-
-
     var array = [];
-    // canvas.add(newImage);
+    canvas.add(newImage);
     var x = cords[0]; // $scope.fabric.canvasScale;
     var y = cords[1];// $scope.fabric.canvasScale;
     var coords = "Original Position=" + "X co-ords: " + x + ", Y co-ords: " + y;
@@ -300,6 +308,22 @@ canvas.on('object:modified',function(e){
 });
 
 canvas.on('object:moving',function(e){
+  var obj = e.target;
+     // if object is too big ignore
+    if(obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
+      return;
+    }        
+    obj.setCoords();        
+    // top-left  corner
+    if(obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
+      obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
+      obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
+    }
+    // bot-right corner
+    if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
+      obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
+      obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
+    }
   $(".deleteBtn").remove(); 
   var scaledObject = e.target;
   // mac_xy[id] = [x,y];
@@ -349,6 +373,41 @@ pgimage.onload = function(){
 
   
 }
+
+
+var container = document.getElementById('visualization');
+
+ var items = new vis.DataSet([
+    {id: 4, className:'item4', content: 'item 4', start: '2017-03-16'},
+    {id: 5, className:'item5', content: 'item 5', start: '2017-02-23'},
+    {id: 6, className:'item6', content: 'item 6', start: '2017-03-27'}
+  ]);
+  
+    var options = {
+     showCurrentTime: true,
+     orientation: {axis: 'both', item: 'top'}, 
+     height: 400,
+     editable: true,
+     margin: {
+         axis: 100
+    }
+  };
+  
+
+  var timeline = new vis.Timeline(container, items, options);
+  // add event listener
+    timeline.on('select', onSelect); //select works
+    
+    //NO mouseover event. how to add mousever event?????????? 
+    timeline.on('mouseover', onMouseover);  //this does not work!
+    
+    
+    function onMouseover (properties) {
+       alert('mouseover items: ' + properties.nodes);
+    }
+    function onSelect (properties) {
+       alert('selected items: ' + properties.nodes);
+    }
 
 
 </script>

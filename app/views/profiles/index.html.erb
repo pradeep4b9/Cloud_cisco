@@ -82,6 +82,12 @@ div.small {
       <img draggable="true" src="https://img.clipartfest.com/c17bcdef97a76752c622e55955cd72b2_location-symbol-map-clip-art-location-icon-clipart_366-592.png" width="25" height="25" id = "image3" data-mac="11:22:22" ></img>
       <img draggable="" src="" width="25" height="25" id = "" data-mac="" ></img>
       <img draggable="" src="" width="25" height="25" id = "" data-mac="" ></img>
+      <!-- <button class="play">play</button>
+      <button class="pause">pause</button> -->
+      <button type="button" class=" play btn btn-success">Play</button>
+      <button type="button" class=" pause btn btn-success">Pause</button>
+      <div class="divafter"></div>
+
   </div>
 
 
@@ -93,6 +99,7 @@ div.small {
   <div id="results"></div>
   <div id="visualization"></div>
 
+  
 <script>
 
 
@@ -408,6 +415,25 @@ var container = document.getElementById('visualization');
     function onSelect (properties) {
        alert('selected items: ' + properties.nodes);
     }
+
+    (function($){
+    var interval;        
+    var playing = false;
+    $(".play").click(function(){
+        if(playing){
+            retunrn;
+        }
+        playing = true;
+        interval = setInterval(function() {
+            $(".divafter").after("playing <br/>");
+        }, 500);
+    });
+    $(".pause").click(function(){
+        playing = false;
+        clearInterval(interval);            
+    });
+    
+    })(jQuery);
 
 
 </script>
